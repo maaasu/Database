@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: wooden_staff
+category: EQUIPMENT
+name: "&6木の杖"
+material: STICK
+customModelData: 10101
+rarity: COMMON
+lore:
+  - "&7木で作られた初心者向けの杖。"
+  - "&7魔法の入門に最適。"
+
+baseStats:
+  attack: 3
+  defense: 0
+  speed: 0
+  critChance: 0.02
+  critDamage: 0.10
+
+requirements:
+  level: 1
+  classes: ["MAGE"]
+
+durability:
+  max: 80
+  loss:
+    hit: 1
+
+flags:
+  unstackable: true

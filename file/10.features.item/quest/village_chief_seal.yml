@@ -1,0 +1,10 @@
+schemaVersion: 1
+id: village_chief_seal
+category: QUEST
+name: "&e村長の印章"
+icon: GOLD_NUGGET
+rarity: UNCOMMON
+saleValue: 0
+lore:
+  - "&7村長から預かった印章。"
+  - "&7重要な証明として使用できる。"

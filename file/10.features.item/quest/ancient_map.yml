@@ -1,0 +1,10 @@
+schemaVersion: 1
+id: ancient_map
+category: QUEST
+name: "&e古代の地図"
+icon: MAP
+rarity: UNCOMMON
+saleValue: 0
+lore:
+  - "&7古い時代に描かれた地図。"
+  - "&7隠された場所を示している。"

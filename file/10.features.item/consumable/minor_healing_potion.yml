@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: minor_healing_potion
+category: CONSUMABLE
+name: "&c小回復薬"
+icon: POTION
+rarity: COMMON
+saleValue: 10
+lore:
+  - "&7HPを少量回復する薬。"
+  - "&7冒険者の必需品。"
+
+consumable:
+  onUse:
+    sound: entity.player.burp
+    effect: heart
+    amount: 1
+  effects:
+    - type: RECOVER
+      status: HP
+      value: 30
+      isPercent: false

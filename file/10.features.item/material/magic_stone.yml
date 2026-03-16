@@ -1,0 +1,10 @@
+schemaVersion: 1
+id: magic_stone
+category: MATERIAL
+name: "&b魔石"
+icon: LAPIS_LAZULI
+rarity: UNCOMMON
+saleValue: 15
+lore:
+  - "&7魔力を帯びた不思議な石。"
+  - "&7魔法装備の素材として使用できる。"

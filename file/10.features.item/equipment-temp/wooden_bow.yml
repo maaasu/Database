@@ -1,0 +1,29 @@
+schemaVersion: 1
+id: wooden_bow
+category: EQUIPMENT
+name: "&6木の弓"
+material: BOW
+customModelData: 10401
+rarity: COMMON
+lore:
+  - "&7木で作られた初心者向けの弓。"
+  - "&7遠距離攻撃の入門に最適。"
+
+baseStats:
+  attack: 6
+  defense: 0
+  speed: 0
+  critChance: 0.05
+  critDamage: 0.20
+
+requirements:
+  level: 1
+  classes: ["ARCHER", "RANGER"]
+
+durability:
+  max: 100
+  loss:
+    hit: 1
+
+flags:
+  unstackable: true

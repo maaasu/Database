@@ -1,0 +1,10 @@
+schemaVersion: 1
+id: medicine_delivery
+category: QUEST
+name: "&e届け物の薬"
+icon: POTION
+rarity: COMMON
+saleValue: 0
+lore:
+  - "&7病人に届ける薬。"
+  - "&7急いで届ける必要がある。"

@@ -1,0 +1,10 @@
+schemaVersion: 1
+id: iron_ore
+category: MATERIAL
+name: "&7鉄鉱石"
+icon: RAW_IRON
+rarity: COMMON
+saleValue: 5
+lore:
+  - "&7採掘で手に入る鉄の原石。"
+  - "&7精錬して鉄インゴットにできる。"

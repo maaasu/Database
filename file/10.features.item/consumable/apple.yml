@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: apple
+category: CONSUMABLE
+name: "&cりんご"
+icon: APPLE
+rarity: COMMON
+saleValue: 3
+lore:
+  - "&7新鮮なりんご。"
+  - "&7少量のHPを回復する。"
+
+consumable:
+  onUse:
+    sound: entity.generic.eat
+    effect: happy_villager
+    amount: 1
+  effects:
+    - type: RECOVER
+      status: HP
+      value: 10
+      isPercent: false

@@ -1,0 +1,17 @@
+schemaVersion: 1
+id: starter_pack
+category: BUNDLE
+name: "&a初心者パック"
+icon: CHEST
+rarity: COMMON
+saleValue: 0
+lore:
+  - "&7冒険を始めるための基本セット。"
+  - "&7回復薬と基本装備が含まれる。"
+
+bundle:
+  lootTableId:
+    ref: loot_table:starter_pack
+  onUse:
+    sound: block.chest.open
+    effect: happy_villager

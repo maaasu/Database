@@ -1,0 +1,10 @@
+schemaVersion: 1
+id: goblin_ear
+category: MATERIAL
+name: "&2ゴブリンの耳"
+icon: ROTTEN_FLESH
+rarity: COMMON
+saleValue: 4
+lore:
+  - "&7ゴブリンから採れた耳。"
+  - "&7討伐の証明として使用できる。"

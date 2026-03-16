@@ -1,0 +1,10 @@
+schemaVersion: 1
+id: copper_ingot
+category: MATERIAL
+name: "&6銅インゴット"
+icon: COPPER_INGOT
+rarity: COMMON
+saleValue: 6
+lore:
+  - "&7精錬された銅の塊。"
+  - "&7初心者向けの装備素材。"

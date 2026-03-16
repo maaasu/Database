@@ -1,0 +1,10 @@
+schemaVersion: 1
+id: goblin_chief_head
+category: QUEST
+name: "&eゴブリン長の首"
+icon: ZOMBIE_HEAD
+rarity: RARE
+saleValue: 0
+lore:
+  - "&7ゴブリンの長を討伐した証。"
+  - "&7依頼主に届ける必要がある。"

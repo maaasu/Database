@@ -1,0 +1,22 @@
+schemaVersion: 1
+
+database:
+  - name: item #カテゴリごとにサブディレクトリが作成されていることを前提とする。
+    path: 10.features.item
+
+  - name: buff
+    path: 70.shared.buff
+  - name: loot #サブディレクトリとして、pool, tableが作成されていることを前提とする。
+    path: 80.shared.loot
+
+referenceResolver:
+  - prefix: "item:"
+    database: item
+    aliases: ["i"]
+  - prefix: "loot_table:"
+    database: loot
+    aliases: ["lt"]
+
+rules:
+  idRegex: "^[a-z0-9_]+$"
+  fileNameFormat: "{schemaVersion}.{id}.yml"

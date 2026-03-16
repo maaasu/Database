@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: speed_potion
+category: CONSUMABLE
+name: "&e俊敏の薬"
+icon: POTION
+rarity: UNCOMMON
+saleValue: 30
+lore:
+  - "&7一時的に移動速度を上げる薬。"
+  - "&7逃走や探索に役立つ。"
+
+consumable:
+  onUse:
+    sound: entity.player.burp
+    effect: cloud
+    amount: 1
+  effects:
+    - type: BUFF
+      buffId:
+        ref: buff:speed_small
+      rate: 100

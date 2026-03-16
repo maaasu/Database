@@ -1,0 +1,15 @@
+schemaVersion: 1
+id: guild_point
+category: CURRENCY
+name: "&aギルドポイント"
+icon: EMERALD
+rarity: UNCOMMON
+lore:
+  - "&7冒険者ギルドで使用できるポイント。"
+  - "&7クエスト報酬として獲得できる。"
+unTradeable: true
+unSellable: true
+
+currency:
+  type: GUILD_TOKEN
+  group: guild

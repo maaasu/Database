@@ -1,0 +1,15 @@
+schemaVersion: 1
+id: arena_coin
+category: CURRENCY
+name: "&c闘技場コイン"
+icon: BRICK
+rarity: RARE
+lore:
+  - "&7闘技場での勝利で獲得できるコイン。"
+  - "&7特別な装備と交換できる。"
+unTradeable: true
+unSellable: true
+
+currency:
+  type: ARENA_TOKEN
+  group: arena

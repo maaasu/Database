@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: mana_potion
+category: CONSUMABLE
+name: "&9マナ薬"
+icon: POTION
+rarity: UNCOMMON
+saleValue: 25
+lore:
+  - "&7MPを回復する薬。"
+  - "&7中程度の回復効果がある。"
+
+consumable:
+  onUse:
+    sound: entity.player.burp
+    effect: witch
+    amount: 1
+  effects:
+    - type: RECOVER
+      status: MP
+      value: 50
+      isPercent: false

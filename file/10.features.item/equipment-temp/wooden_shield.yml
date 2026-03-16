@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: wooden_shield
+category: EQUIPMENT
+name: "&6木の盾"
+material: SHIELD
+customModelData: 10501
+rarity: COMMON
+lore:
+  - "&7木で作られた初心者向けの盾。"
+  - "&7軽くて扱いやすい。"
+
+baseStats:
+  attack: 0
+  defense: 8
+  speed: -0.02
+  critChance: 0
+  critDamage: 0
+
+requirements:
+  level: 1
+
+durability:
+  max: 150
+  loss:
+    block: 2
+
+flags:
+  unstackable: true

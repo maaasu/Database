@@ -1,0 +1,23 @@
+schemaVersion: 1
+id: traveler_ring
+category: EQUIPMENT
+name: "&a旅人の指輪"
+material: GOLD_NUGGET
+customModelData: 10701
+rarity: UNCOMMON
+lore:
+  - "&7旅人に幸運をもたらすと言われる指輪。"
+  - "&7移動速度が少し上がる。"
+
+baseStats:
+  attack: 0
+  defense: 1
+  speed: 0.08
+  critChance: 0.02
+  critDamage: 0
+
+requirements:
+  level: 3
+
+flags:
+  unstackable: true

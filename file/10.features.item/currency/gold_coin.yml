@@ -1,0 +1,15 @@
+schemaVersion: 1
+id: gold_coin
+category: CURRENCY
+name: "&6金貨"
+icon: GOLD_NUGGET
+rarity: COMMON
+lore:
+  - "&7王国で流通する標準通貨。"
+  - "&7商人との取引に使用できる。"
+unTradeable: false
+unSellable: true
+
+currency:
+  type: STANDARD_CURRENCY
+  group: standard

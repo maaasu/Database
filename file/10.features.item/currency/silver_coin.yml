@@ -1,0 +1,15 @@
+schemaVersion: 1
+id: silver_coin
+category: CURRENCY
+name: "&f銀貨"
+icon: IRON_NUGGET
+rarity: COMMON
+lore:
+  - "&7王国で流通する補助通貨。"
+  - "&7金貨より価値は低いが広く使われる。"
+unTradeable: false
+unSellable: true
+
+currency:
+  type: STANDARD_CURRENCY
+  group: standard
