@@ -26,7 +26,6 @@ Buff（一定時間付与される効果）のスキーマ定義。
 他DBからbuffを参照する場合は `buff:` prefix を使用します（aliases: `bf`）。
 
 ### modifiers[].status（StatusType）
-`AstralSaga.feature.status.model.StatusType` のいずれかを指定します。
 
 例:
 - `ATTACK_POWER`
@@ -35,7 +34,6 @@ Buff（一定時間付与される効果）のスキーマ定義。
 - `COOLDOWN_REDUCTION`
 
 ### modifiers[].type（ModifierType）
-`AstralSaga.feature.status.model.ModifierType` のいずれかを指定します。
 
 - `FLAT` : 定数加算
 - `SCALAR`: 乗算（ベース値に対して）。計算式: **最終値 = (base + flatTotal) * (1 + scalarTotal)**
