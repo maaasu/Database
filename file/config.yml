@@ -19,4 +19,4 @@ referenceResolver:
 
 rules:
   idRegex: "^[a-z0-9_]+$"
-  fileNameFormat: "{schemaVersion}.{id}.yml"
+  fileNameFormat: "v{schemaVersion}.{id}.yml"
