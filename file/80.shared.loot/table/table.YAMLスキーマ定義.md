@@ -9,7 +9,7 @@ LootTableのスキーマ定義。
 | `schemaVersion`   | Integer      | ○  | -     | スキーマのバージョン（2026-01-18時点は `1`）   |
 | `id`              | String       | ○  | -     | lootのテンプレートID。（例: `coin_small`） |
 | `type`            | String       | ○  | -     | Loot種別（LOOT_TABLE(lt)）          |
-| `rolls`           | Integer      | ×  | 1     | 抽選回数。固定値、範囲（例: `1` `1~4`）       |
+| `rolls`           | String       | ×  | 1     | 抽選回数。固定値、範囲（例: `1` `1~4`）       |
 | `pools`           | List<String> | ○  | -     | poolの設定  ※参照値                   |
 
 ### 参照（ref）

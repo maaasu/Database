@@ -13,7 +13,7 @@ LootPoolのスキーマ定義。
 | `contents[]`        | List    | ○  | -            | コンテンツの設定リスト（後述）                                 |
 | `contents[].itemId` | String  | ○  | -            | ドロップするアイテムのID （例: item:iron_ingot ） ※参照値        |
 | `contents[].rate`   | Double  | ○  | -            | 固定値（0 ~ 100） #小数あり                              |
-| `contents[].amount` | Integer | ×  | 1            | 固定値、範囲（例: `1` `1~4`）                            |
+| `contents[].amount` | String  | ×  | 1            | 固定値、範囲（例: `1` `1~4`）                            |
 
 
 ## YAML 例

@@ -3,6 +3,12 @@ schemaVersion: 1
 database:
   - name: item #カテゴリごとにサブディレクトリが作成されていることを前提とする。
     path: 10.features.item
+  - name: class
+    path: 20.features.classes
+  - name: skill
+    path: 30.features.classes.skills
+  - name: mob
+    path: 40.features.mob
 
   - name: buff
     path: 70.shared.buff
@@ -12,11 +18,17 @@ database:
 referenceResolver:
   - prefix: "item:"
     database: item
-    aliases: ["i"]
+    aliases: ["im"]
   - prefix: "loot_table:"
     database: loot
     aliases: ["lt"]
+  - prefix: "buff:"
+    database: buff
+    aliases: ["bf"]
+  - prefix: "class:"
+    database: class
+    aliases: ["cs"]
+  - prefix: "skill:"
+    database: skill
+    aliases: ["sk"]
 
-rules:
-  idRegex: "^[a-z0-9_]+$"
-  fileNameFormat: "v{schemaVersion}.{id}.yml"
