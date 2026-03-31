@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: iron_chestplate
+category: equipment
+name: "&f鉄の胸当て"
+icon: IRON_CHESTPLATE
+rarity: COMMON
+maxStack: 1
+saleValue: 45
+lore:
+  - "&7鍛冶師が作った標準的な胸当て。"
+  - "&7しっかりとした防御力を持つ。"
+unTradeable: false
+unSellable: false
+
+equipment:
+  slot: CHEST
+  requiredLevel: 5
+  stats:
+    - status: DEFENSE
+      type: FLAT
+      value: 15
+    - status: MAX_HEALTH
+      type: FLAT
+      value: 20
+  durability:
+    max: 200
+    consume: 1
+

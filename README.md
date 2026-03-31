@@ -16,6 +16,8 @@ Minecraft Purpur サーバー向け MMO RPG プラグインで利用する、デ
 - 主な配下:
 	- `file/10.features.item/`（item系）
 	- `file/20.features.class/`（class系）
+	- `file/30.features.skill/`（skill系）
+	- `file/40.features.mob/`（mob系 — enemy / boss / npc）
 	- `file/70.shared.buff/`（buff系）
 	- `file/80.shared.loot/`（loot系）
 - スキーマ定義:

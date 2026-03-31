@@ -31,4 +31,7 @@ referenceResolver:
   - prefix: "skill:"
     database: skill
     aliases: ["sk"]
+  - prefix: "mob:"
+    database: mob
+    aliases: ["mb"]
 
