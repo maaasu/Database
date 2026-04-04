@@ -20,8 +20,11 @@ referenceResolver:
     database: item
     aliases: ["im"]
   - prefix: "loot_table:"
-    database: loot
+    database: loot.table
     aliases: ["lt"]
+  - prefix: "loot_pool:"
+    database: loot.pool
+    aliases: ["lp"]
   - prefix: "buff:"
     database: buff
     aliases: ["bf"]

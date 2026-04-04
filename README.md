@@ -20,6 +20,7 @@ Minecraft Purpur サーバー向け MMO RPG プラグインで利用する、デ
 	- `file/40.features.mob/`（mob系 — enemy / boss / npc）
 	- `file/70.shared.buff/`（buff系）
 	- `file/80.shared.loot/`（loot系）
+	- `file/85.shared.recipe/`（recipe系）
 - スキーマ定義:
 	- 各領域の `*.YAMLスキーマ定義.md`
 - 命名規則（YAML）:
@@ -44,6 +45,16 @@ Minecraft Purpur サーバー向け MMO RPG プラグインで利用する、デ
 2. `file/` は静的データとして収集し、対象 YAML とスキーマ定義を対応付ける。
 3. `sqlserver/` は動的データとして収集し、`init.sql` と各テーブル定義ドキュメントを入力にする。
 4. 判定結果（静的/動的）を保持したうえで、API 側の取り込み処理に渡す。
+
+## 共通定義
+
+複数のリソース種別から参照される共有定義は `file/00.meta/` に集約しています。
+
+| ファイル                          | 内容                                                                                                    |
+|:------------------------------|:------------------------------------------------------------------------------------------------------|
+| `file/00.meta/StatusType.md`  | プラグイン側（`io.github.maaasu.astralRecord.feature.status.model.StatusType`）のステータス名一覧。mob / class / buff / equipment など `status` フィールドを持つすべてのリソースはこちらを参照する。 |
+
+> プラグイン側の定義に変更が入った場合は `file/00.meta/StatusType.md` のみを更新してください。各スキーマ定義の個別更新は不要です。
 
 ## 運用ルール
 
