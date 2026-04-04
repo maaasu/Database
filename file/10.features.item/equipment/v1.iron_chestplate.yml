@@ -25,4 +25,45 @@ equipment:
   durability:
     max: 200
     consume: 1
+  enchant:
+    maxSlots: 2
+    pools:
+      - requiredMaterial:
+          itemId: magic_crystal
+          amount: 1
+        requiredCurrency: 200
+        entries:
+          - status: DEFENSE
+            type: FLAT
+            value: 3~8
+            weight: 10
+          - status: MAX_HEALTH
+            type: FLAT
+            value: 10~20
+            weight: 10
+          - status: MAGIC_DEFENSE
+            type: FLAT
+            value: 3~6
+            weight: 8
+          - status: HP_REGEN
+            type: FLAT
+            value: 2~5
+            weight: 5
+      - requiredMaterial:
+          itemId: gold_ingot
+          amount: 3
+        requiredCurrency: 500
+        entries:
+          - status: DEFENSE
+            type: SCALAR
+            value: 0.05~0.10
+            weight: 8
+          - status: EVASION
+            type: FLAT
+            value: 2~5
+            weight: 5
+          - status: CRITICAL_RATE
+            type: FLAT
+            value: 1~3
+            weight: 3
 
