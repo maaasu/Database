@@ -10,6 +10,9 @@ database:
   - name: mob
     path: 40.features.mob
 
+  - name: set_effect
+    path: 10.features.item/equipment/set_effect
+
   - name: buff
     path: 70.shared.buff
   - name: loot #サブディレクトリとして、pool, tableが作成されていることを前提とする。
@@ -34,6 +37,9 @@ referenceResolver:
   - prefix: "skill:"
     database: skill
     aliases: ["sk"]
+  - prefix: "set:"
+    database: set_effect
+    aliases: ["st"]
   - prefix: "mob:"
     database: mob
     aliases: ["mb"]

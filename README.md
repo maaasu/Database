@@ -32,10 +32,22 @@ Minecraft Purpur サーバー向け MMO RPG プラグインで利用する、デ
 プレイヤーのレベル、職業、アカウント情報などを SQL Server テーブル定義として管理します。
 
 - 主な配下:
-	- `sqlserver/init.sql`
-	- `sqlserver/AstralRecord/dbo.account/`
-	- `sqlserver/AstralRecord/dbo.user/`
-	- `sqlserver/AstralRecord/dbo.yaml_snapshot/`
+	- `sqlserver/init.sql`（全DB共通の初期構築スクリプト）
+	- `sqlserver/AstralRecord/`（ゲームデータDB）
+		- `dbo.account/`
+		- `dbo.user/`
+		- `dbo.equipment_instance/`（装備個体の動的状態）
+		- `dbo.equipment_instance_stat_roll/`（生成時の random.min / random.max）
+		- `dbo.equipment_instance_enchant_pool/`（個体に紐づく enchant.pools）
+	- `sqlserver/AstralRecordSnapshot/`（YAMLスナップショット管理DB）
+		- `dbo.yaml_snapshot/`
+
+#### DBの役割
+
+| DB名                    | 役割                                      |
+|:-----------------------|:----------------------------------------|
+| `AstralRecord`         | プレイヤー・アカウント・装備個体の動的データを管理する                     |
+| `AstralRecordSnapshot` | YAMLファイルのスナップショットを保持し、前回ロード時との差分検出に使用する |
 
 ## API 連携向け探索ガイド
 
