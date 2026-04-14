@@ -48,39 +48,39 @@ YAMLマスタは保存せず、`item_id` を参照キーとして個体の動的
 
 ### 外部キー制約
 
-| 制約名                               | カラム       | 参照先                | ON DELETE | ON UPDATE |
-|:------------------------------------|:------------|:----------------------|:----------|:----------|
-| `FK_equipment_instance_account`     | `account_id` | `dbo.account(uuid)`   | NO ACTION | NO ACTION |
+| 制約名                             | カラム          | 参照先                 | ON DELETE | ON UPDATE |
+|:--------------------------------|:-------------|:--------------------|:----------|:----------|
+| `FK_equipment_instance_account` | `account_id` | `dbo.account(uuid)` | NO ACTION | NO ACTION |
 
 ### CHECK 制約
 
-| 制約名                                      | 条件 | 説明 |
-|:-------------------------------------------|:-----|:-----|
-| `CK_equipment_instance_enhance_level`      | `[enhance_level] >= 0` | 強化レベルは 0 以上 |
-| `CK_equipment_instance_rune_max_slots`     | `[rune_max_slots] >= 0` | ルーンスロットは 0 以上 |
-| `CK_equipment_instance_transcendence_rank` | `[transcendence_rank] >= 0` | 状態変化ランクは 0 以上 |
-| `CK_equipment_instance_durability_pair`    | `([durability_max] IS NULL AND [durability_value] IS NULL) OR ([durability_max] IS NOT NULL AND [durability_value] IS NOT NULL)` | 耐久値はペアで保持 |
-| `CK_equipment_instance_durability_range`   | `[durability_max] IS NULL OR ([durability_max] > 0 AND [durability_value] BETWEEN 0 AND [durability_max])` | 現在耐久は 0〜上限 |
+| 制約名                                        | 条件                                                                                                                               | 説明            |
+|:-------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------|:--------------|
+| `CK_equipment_instance_enhance_level`      | `[enhance_level] >= 0`                                                                                                           | 強化レベルは 0 以上   |
+| `CK_equipment_instance_rune_max_slots`     | `[rune_max_slots] >= 0`                                                                                                          | ルーンスロットは 0 以上 |
+| `CK_equipment_instance_transcendence_rank` | `[transcendence_rank] >= 0`                                                                                                      | 状態変化ランクは 0 以上 |
+| `CK_equipment_instance_durability_pair`    | `([durability_max] IS NULL AND [durability_value] IS NULL) OR ([durability_max] IS NOT NULL AND [durability_value] IS NOT NULL)` | 耐久値はペアで保持     |
+| `CK_equipment_instance_durability_range`   | `[durability_max] IS NULL OR ([durability_max] > 0 AND [durability_value] BETWEEN 0 AND [durability_max])`                       | 現在耐久は 0〜上限    |
 
 ### デフォルト制約
 
-| 制約名                                           | カラム                | 値 |
-|:------------------------------------------------|:---------------------|:---|
-| `DF_equipment_instance_enhance_level`           | `enhance_level`      | `0` |
-| `DF_equipment_instance_rune_max_slots`          | `rune_max_slots`     | `0` |
-| `DF_equipment_instance_transcendence_rank`      | `transcendence_rank` | `0` |
-| `DF_equipment_instance_is_deleted`              | `is_deleted`         | `0` |
+| 制約名                                        | カラム                  | 値   |
+|:-------------------------------------------|:---------------------|:----|
+| `DF_equipment_instance_enhance_level`      | `enhance_level`      | `0` |
+| `DF_equipment_instance_rune_max_slots`     | `rune_max_slots`     | `0` |
+| `DF_equipment_instance_transcendence_rank` | `transcendence_rank` | `0` |
+| `DF_equipment_instance_is_deleted`         | `is_deleted`         | `0` |
 
 ---
 
 ## インデックス定義
 
-| インデックス名                            | カラム                 | 種別 | 用途 |
-|:------------------------------------------|:----------------------|:-----|:-----|
-| `PK_equipment_instance`                   | `equipment_instance_id` | CLUSTERED（主キー） | 主キー検索 |
-| `IX_equipment_instance_account_id`        | `account_id`          | NONCLUSTERED | 所有装備一覧取得 |
-| `IX_equipment_instance_item_id`           | `item_id`             | NONCLUSTERED | itemId別検索 |
-| `IX_equipment_instance_is_deleted`        | `is_deleted`          | NONCLUSTERED | 論理削除フィルタ |
+| インデックス名                            | カラム                     | 種別             | 用途        |
+|:-----------------------------------|:------------------------|:---------------|:----------|
+| `PK_equipment_instance`            | `equipment_instance_id` | CLUSTERED（主キー） | 主キー検索     |
+| `IX_equipment_instance_account_id` | `account_id`            | NONCLUSTERED   | 所有装備一覧取得  |
+| `IX_equipment_instance_item_id`    | `item_id`               | NONCLUSTERED   | itemId別検索 |
+| `IX_equipment_instance_is_deleted` | `is_deleted`            | NONCLUSTERED   | 論理削除フィルタ  |
 
 ---
 
@@ -138,17 +138,17 @@ GO
 
 ## 用途
 
-| 用途 | 説明 |
-|:-----|:-----|
-| 装備個体管理 | 生成済み装備を itemId 単位ではなく個体単位で保持する |
+| 用途     | 説明                              |
+|:-------|:--------------------------------|
+| 装備個体管理 | 生成済み装備を itemId 単位ではなく個体単位で保持する  |
 | 動的状態管理 | 強化レベル・ルーンスロット・状態変化ランク・現在耐久を管理する |
-| 論理削除 | `is_deleted = 1` で物理削除せず無効化する |
+| 論理削除   | `is_deleted = 1` で物理削除せず無効化する   |
 
 ---
 
 ## ソースコード参照
 
-| 種別 | パス |
-|:-----|:-----|
+| 種別    | パス    |
+|:------|:------|
 | Table | `TBD` |
 
