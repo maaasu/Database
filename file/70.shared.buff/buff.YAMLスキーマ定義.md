@@ -20,7 +20,7 @@ Buff（一定時間付与される効果）のスキーマ定義。
 | `durationTicks`      | Long         | ○  | -         | 効果時間（tick）。Minecraftの慣習として 20 tick = 1 秒。`-1` の場合は無期限（tickで減らない） |
 | `isDebuff`           | Boolean      | ×  | false     | trueでデバフ扱い（表示や演出用途。計算式には影響しない）                                   |
 | `modifiers[]`        | List         | ○  | -         | 付与するステータス補正のリスト（後述）                                              |
-| `modifiers[].status` | String       | ○  | -         | 対象ステータス（`StatusType`。例: `ATTACK`）                          |
+| `modifiers[].status` | String       | ○  | -         | 対象ステータス（`StatusType`。例: `ATTACK`）                                |
 | `modifiers[].type`   | String       | ○  | -         | 補正タイプ（`ModifierType`。`FLAT` / `SCALAR`）                          |
 | `modifiers[].value`  | Double       | ○  | -         | 補正値（Double）。`FLAT` は加算、`SCALAR` は乗算係数（例: `0.2` = +20%）           |
 

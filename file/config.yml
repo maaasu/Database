@@ -17,6 +17,8 @@ database:
     path: 70.shared.buff
   - name: loot #サブディレクトリとして、pool, tableが作成されていることを前提とする。
     path: 80.shared.loot
+  - name: recipe
+    path: 85.shared.recipe
 
 referenceResolver:
   - prefix: "item:"
@@ -40,6 +42,9 @@ referenceResolver:
   - prefix: "set:"
     database: set_effect
     aliases: ["st"]
+  - prefix: "recipe:"
+    database: recipe
+    aliases: ["rc"]
   - prefix: "mob:"
     database: mob
     aliases: ["mb"]
