@@ -32,7 +32,6 @@
 | `updated_at`            | `DATETIME2(3)`     |    |    ○    |        | レコード最終更新日時    |
 | `created_by`            | `UNIQUEIDENTIFIER` |    |    ○    |        | 作成者の UUID     |
 | `updated_by`            | `UNIQUEIDENTIFIER` |    |    ○    |        | 最終更新者の UUID   |
-| `is_deleted`            | `BIT`              |    |    ○    |  `0`   | 論理削除フラグ       |
 
 ---
 
@@ -48,20 +47,13 @@
 
 | 制約名                                                  | カラム                     | 参照先                                             | ON DELETE | ON UPDATE |
 |:-----------------------------------------------------|:------------------------|:------------------------------------------------|:----------|:----------|
-| `FK_equipment_instance_stat_roll_equipment_instance` | `equipment_instance_id` | `dbo.equipment_instance(equipment_instance_id)` | NO ACTION | NO ACTION |
+| `FK_equipment_instance_stat_roll_equipment_instance` | `equipment_instance_id` | `dbo.equipment_instance(equipment_instance_id)` | CASCADE   | NO ACTION |
 
 ### UNIQUE 制約
 
 | 制約名                                               | カラム                                             | 説明           |
 |:--------------------------------------------------|:------------------------------------------------|:-------------|
 | `UQ_equipment_instance_stat_roll_instance_status` | `equipment_instance_id`, `status`, `sort_order` | 同一個体の重複定義を防ぐ |
-
-### デフォルト制約
-
-| 制約名                                          | カラム          | 値   |
-|:---------------------------------------------|:-------------|:----|
-| `DF_equipment_instance_stat_roll_sort_order` | `sort_order` | `0` |
-| `DF_equipment_instance_stat_roll_is_deleted` | `is_deleted` | `0` |
 
 ---
 
@@ -88,12 +80,11 @@ CREATE TABLE [dbo].[equipment_instance_stat_roll] (
     [updated_at]              DATETIME2(3)      NOT NULL,
     [created_by]              UNIQUEIDENTIFIER  NOT NULL,
     [updated_by]              UNIQUEIDENTIFIER  NOT NULL,
-    [is_deleted]              BIT               NOT NULL  CONSTRAINT [DF_equipment_instance_stat_roll_is_deleted]  DEFAULT (0),
 
     CONSTRAINT [PK_equipment_instance_stat_roll] PRIMARY KEY CLUSTERED ([stat_roll_id]),
     CONSTRAINT [FK_equipment_instance_stat_roll_equipment_instance] FOREIGN KEY ([equipment_instance_id])
         REFERENCES [dbo].[equipment_instance] ([equipment_instance_id])
-        ON DELETE NO ACTION
+        ON DELETE CASCADE
         ON UPDATE NO ACTION,
     CONSTRAINT [UQ_equipment_instance_stat_roll_instance_status] UNIQUE ([equipment_instance_id], [status], [sort_order])
 );
@@ -112,7 +103,6 @@ GO
 |:--------|:---------------------------------------------|
 | 下限/上限候補保持 | 装備生成時点の `value.min / value.max` を個体単位で保持する |
 | 個体差再現   | 後続処理で同じ個体状態を再現・追跡できる                         |
-| 論理削除    | `is_deleted = 1` で物理削除せず無効化する                |
 
 ---
 

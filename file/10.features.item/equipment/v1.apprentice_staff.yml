@@ -19,7 +19,7 @@ equipment:
   stats:
     - status: ATTACK
       type: FLAT
-      value: 8
+      value: 8~12
     - status: INTELLIGENCE
       type: FLAT
       value: 6

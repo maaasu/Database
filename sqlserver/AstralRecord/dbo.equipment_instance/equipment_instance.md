@@ -20,21 +20,24 @@ YAMLマスタは保存せず、`item_id` を参照キーとして個体の動的
 
 ## カラム定義
 
-| カラム名                    | データ型               | PK | NotNull | デフォルト値 | 説明                                    |
-|:------------------------|:-------------------|:--:|:-------:|:------:|:--------------------------------------|
-| `equipment_instance_id` | `UNIQUEIDENTIFIER` | ○  |    ○    |        | 装備個体ID                                |
-| `account_id`            | `UNIQUEIDENTIFIER` |    |    ○    |        | 所有アカウント UUID（FK → `dbo.account.uuid`） |
-| `item_id`               | `NVARCHAR(100)`    |    |    ○    |        | 元YAMLの装備ID                            |
-| `enhance_level`         | `INT`              |    |    ○    |  `0`   | 現在の強化レベル                              |
-| `rune_max_slots`        | `INT`              |    |    ○    |  `0`   | この個体に生成されたルーン最大スロット数                  |
-| `transcendence_rank`    | `INT`              |    |    ○    |  `0`   | 現在の状態変化ランク                            |
-| `durability_max`        | `INT`              |    |         |        | 耐久上限（YAMLで durability.max がある場合のみ保持）  |
-| `durability_value`      | `INT`              |    |         |        | 現在耐久値（耐久管理対象のときのみ保持）                  |
-| `created_at`            | `DATETIME2(3)`     |    |    ○    |        | レコード作成日時                              |
-| `updated_at`            | `DATETIME2(3)`     |    |    ○    |        | レコード最終更新日時                            |
-| `created_by`            | `UNIQUEIDENTIFIER` |    |    ○    |        | 作成者の UUID                             |
-| `updated_by`            | `UNIQUEIDENTIFIER` |    |    ○    |        | 最終更新者の UUID                           |
-| `is_deleted`            | `BIT`              |    |    ○    |  `0`   | 論理削除フラグ                               |
+| カラム名                              | データ型               | PK | NotNull | デフォルト値 | 説明                                      |
+|:----------------------------------|:-------------------|:--:|:-------:|:------:|:----------------------------------------|
+| `equipment_instance_id`           | `UNIQUEIDENTIFIER` | ○  |    ○    |        | 装備個体ID                                  |
+| `account_id`                      | `UNIQUEIDENTIFIER` |    |    ○    |        | 所有アカウント UUID（FK → `dbo.account.uuid`）   |
+| `item_id`                         | `NVARCHAR(100)`    |    |    ○    |        | 元YAMLの装備ID                              |
+| `enhance_level`                   | `INT`              |    |    ○    |  `0`   | 現在の強化レベル                                |
+| `rune_max_slots`                  | `INT`              |    |    ○    |  `0`   | この個体に生成されたルーン最大スロット数                    |
+| `transcendence_rank`              | `INT`              |    |    ○    |  `0`   | 現在の状態変化ランク                              |
+| `transcendence_name`              | `NVARCHAR(100)`    |    |         |        | 状態変化によって上書きされた名称（NULL時は変更なし）            |
+| `transcendence_enhance_max_level` | `INT`              |    |         |        | 状態変化によって上書きされた強化最大レベル（NULL時は変更なし）       |
+| `transcendence_enchant_max_slots` | `INT`              |    |         |        | 状態変化によって上書きされたエンチャント最大スロット数（NULL時は変更なし） |
+| `durability_max`                  | `INT`              |    |         |        | 耐久上限（YAMLで durability.max がある場合のみ保持）    |
+| `durability_value`                | `INT`              |    |         |        | 現在耐久値（耐久管理対象のときのみ保持）                    |
+| `created_at`                      | `DATETIME2(3)`     |    |    ○    |        | レコード作成日時                                |
+| `updated_at`                      | `DATETIME2(3)`     |    |    ○    |        | レコード最終更新日時                              |
+| `created_by`                      | `UNIQUEIDENTIFIER` |    |    ○    |        | 作成者の UUID                               |
+| `updated_by`                      | `UNIQUEIDENTIFIER` |    |    ○    |        | 最終更新者の UUID                             |
+| `is_deleted`                      | `BIT`              |    |    ○    |  `0`   | 論理削除フラグ                                 |
 
 ---
 
@@ -54,13 +57,15 @@ YAMLマスタは保存せず、`item_id` を参照キーとして個体の動的
 
 ### CHECK 制約
 
-| 制約名                                        | 条件                                                                                                                               | 説明            |
-|:-------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------|:--------------|
-| `CK_equipment_instance_enhance_level`      | `[enhance_level] >= 0`                                                                                                           | 強化レベルは 0 以上   |
-| `CK_equipment_instance_rune_max_slots`     | `[rune_max_slots] >= 0`                                                                                                          | ルーンスロットは 0 以上 |
-| `CK_equipment_instance_transcendence_rank` | `[transcendence_rank] >= 0`                                                                                                      | 状態変化ランクは 0 以上 |
-| `CK_equipment_instance_durability_pair`    | `([durability_max] IS NULL AND [durability_value] IS NULL) OR ([durability_max] IS NOT NULL AND [durability_value] IS NOT NULL)` | 耐久値はペアで保持     |
-| `CK_equipment_instance_durability_range`   | `[durability_max] IS NULL OR ([durability_max] > 0 AND [durability_value] BETWEEN 0 AND [durability_max])`                       | 現在耐久は 0〜上限    |
+| 制約名                                                     | 条件                                                                                                                               | 説明               |
+|:--------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------|:-----------------|
+| `CK_equipment_instance_enhance_level`                   | `[enhance_level] >= 0`                                                                                                           | 強化レベルは 0 以上      |
+| `CK_equipment_instance_rune_max_slots`                  | `[rune_max_slots] >= 0`                                                                                                          | ルーンスロットは 0 以上    |
+| `CK_equipment_instance_transcendence_rank`              | `[transcendence_rank] >= 0`                                                                                                      | 状態変化ランクは 0 以上    |
+| `CK_equipment_instance_transcendence_enhance_max_level` | `[transcendence_enhance_max_level] IS NULL OR [transcendence_enhance_max_level] >= 0`                                            | 上書き強化レベルは 0 以上   |
+| `CK_equipment_instance_transcendence_enchant_max_slots` | `[transcendence_enchant_max_slots] IS NULL OR [transcendence_enchant_max_slots] >= 0`                                            | 上書きエンチャント枠は 0 以上 |
+| `CK_equipment_instance_durability_pair`                 | `([durability_max] IS NULL AND [durability_value] IS NULL) OR ([durability_max] IS NOT NULL AND [durability_value] IS NOT NULL)` | 耐久値はペアで保持        |
+| `CK_equipment_instance_durability_range`                | `[durability_max] IS NULL OR ([durability_max] > 0 AND [durability_value] BETWEEN 0 AND [durability_max])`                       | 現在耐久は 0〜上限       |
 
 ### デフォルト制約
 
@@ -94,6 +99,9 @@ CREATE TABLE [dbo].[equipment_instance] (
     [enhance_level]          INT               NOT NULL  CONSTRAINT [DF_equipment_instance_enhance_level]      DEFAULT (0),
     [rune_max_slots]         INT               NOT NULL  CONSTRAINT [DF_equipment_instance_rune_max_slots]     DEFAULT (0),
     [transcendence_rank]     INT               NOT NULL  CONSTRAINT [DF_equipment_instance_transcendence_rank] DEFAULT (0),
+    [transcendence_name]              NVARCHAR(100)        NULL,
+    [transcendence_enhance_max_level] INT                  NULL,
+    [transcendence_enchant_max_slots] INT                  NULL,
     [durability_max]         INT                   NULL,
     [durability_value]       INT                   NULL,
     [created_at]             DATETIME2(3)      NOT NULL,
@@ -110,6 +118,8 @@ CREATE TABLE [dbo].[equipment_instance] (
     CONSTRAINT [CK_equipment_instance_enhance_level] CHECK ([enhance_level] >= 0),
     CONSTRAINT [CK_equipment_instance_rune_max_slots] CHECK ([rune_max_slots] >= 0),
     CONSTRAINT [CK_equipment_instance_transcendence_rank] CHECK ([transcendence_rank] >= 0),
+    CONSTRAINT [CK_equipment_instance_transcendence_enhance_max_level] CHECK ([transcendence_enhance_max_level] IS NULL OR [transcendence_enhance_max_level] >= 0),
+    CONSTRAINT [CK_equipment_instance_transcendence_enchant_max_slots] CHECK ([transcendence_enchant_max_slots] IS NULL OR [transcendence_enchant_max_slots] >= 0),
     CONSTRAINT [CK_equipment_instance_durability_pair] CHECK (
         ([durability_max] IS NULL AND [durability_value] IS NULL)
         OR ([durability_max] IS NOT NULL AND [durability_value] IS NOT NULL)
@@ -138,11 +148,11 @@ GO
 
 ## 用途
 
-| 用途     | 説明                              |
-|:-------|:--------------------------------|
-| 装備個体管理 | 生成済み装備を itemId 単位ではなく個体単位で保持する  |
-| 動的状態管理 | 強化レベル・ルーンスロット・状態変化ランク・現在耐久を管理する |
-| 論理削除   | `is_deleted = 1` で物理削除せず無効化する   |
+| 用途     | 説明                                      |
+|:-------|:----------------------------------------|
+| 装備個体管理 | 生成済み装備を itemId 単位ではなく個体単位で保持する          |
+| 動的状態管理 | 強化レベル・ルーンスロット・状態変化ランクおよび上書き情報・現在耐久を管理する |
+| 論理削除   | `is_deleted = 1` で物理削除せず無効化する           |
 
 ---
 

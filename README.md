@@ -38,7 +38,7 @@ Minecraft Purpur サーバー向け MMO RPG プラグインで利用する、デ
 		- `dbo.user/`
 		- `dbo.equipment_instance/`（装備個体の動的状態）
 		- `dbo.equipment_instance_stat_roll/`（生成時の value.min / value.max 候補）
-		- `dbo.equipment_instance_enchant_pool/`（個体に紐づく enchant.pools）
+		- `dbo.equipment_instance_enchant/`（個体に付与されたエンチャント情報）
 	- `sqlserver/AstralRecordSnapshot/`（YAMLスナップショット管理DB）
 		- `dbo.yaml_snapshot/`
 
