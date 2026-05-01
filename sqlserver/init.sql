@@ -1,16 +1,8 @@
 -- ============================================================
--- データベース初期構築スクリプト
--- 作成日  : 2026-03-08
--- 更新日  : 2026-04-19
---
--- このスクリプトは通常のクエリ実行で動作します（SQLCMDモード不要）。
---
--- [任意] 既存DBを作り直したい場合は、以下を必要に応じて実行してください。
---   USE [master];
---   ALTER DATABASE [AstralRecord] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
---   DROP DATABASE [AstralRecord];
---   ALTER DATABASE [AstralRecordSnapshot] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
---   DROP DATABASE [AstralRecordSnapshot];
+-- Database initialization script
+-- Created    : 2026-03-08
+-- Updated    : 2026-05-01
+-- Target DBs : AstralRecord / AstralRecordSnapshot
 -- ============================================================
 
 USE [master];
@@ -26,32 +18,8 @@ USE [AstralRecord];
 GO
 
 -- ============================================================
--- 対象DB:
---   [AstralRecord]          : ゲームデータ（ユーザー・アカウント・装備動的データ）
---   [AstralRecordSnapshot]  : YAMLスナップショット管理
---
--- ============================================================
--- AstralRecord — 実行手順
---   dbo.user と dbo.account は互いに FK を参照し合う
---   循環参照のため、以下の手順で作成する。
---
---   STEP 1 : dbo.user を FK(account_id) なしで作成
---   STEP 2 : dbo.account を作成（FK → dbo.user 付き）
---   STEP 3 : dbo.user.account_id 用のインデックスを後付け
---            （FK は付与せず、整合性はアプリケーション層で保証）
---   STEP 4 : dbo.equipment 関連テーブルを FK 依存順に作成
---            (4-1) equipment_instance
---            → (4-2) equipment_instance_stat_roll
---            → (4-3) equipment_instance_enchant
---            → (4-4) equipment_instance_rune
---   STEP 5 : dbo.rune 関連テーブルを FK 依存順に作成
---            (5-1) rune_instance
---            → (5-2) rune_instance_stat_roll
--- ============================================================
-
-
--- ============================================================
--- [AstralRecord] STEP 1 : dbo.user（FK: account_id を除いて作成）
+-- STEP 1 : dbo.user
+-- account_id is created nullable first because dbo.account depends on dbo.user.
 -- ============================================================
 
 CREATE TABLE [dbo].[user] (
@@ -60,16 +28,16 @@ CREATE TABLE [dbo].[user] (
     [join_date]        DATETIME2(3)      NOT NULL,
     [last_join_date]   DATETIME2(3)      NOT NULL,
     [global_ip]        NVARCHAR(45)      NOT NULL,
-    [account_id]       UNIQUEIDENTIFIER      NULL,  -- 初回 INSERT 時は NULL（FK は付与しない）
-    [ban_indefinite]   BIT               NOT NULL  CONSTRAINT [DF_user_ban_indefinite]  DEFAULT (0),
+    [account_id]       UNIQUEIDENTIFIER      NULL,
+    [ban_indefinite]   BIT               NOT NULL  CONSTRAINT [DF_user_ban_indefinite] DEFAULT (0),
     [ban_date]         DATETIME2(0)          NULL,
-    [kick_ip]          BIT               NOT NULL  CONSTRAINT [DF_user_kick_ip]          DEFAULT (1),
-    [permission]       INT               NOT NULL  CONSTRAINT [DF_user_permission]        DEFAULT (0),
+    [kick_ip]          BIT               NOT NULL  CONSTRAINT [DF_user_kick_ip] DEFAULT (1),
+    [permission]       INT               NOT NULL  CONSTRAINT [DF_user_permission] DEFAULT (0),
     [created_at]       DATETIME2(3)      NOT NULL,
     [updated_at]       DATETIME2(3)      NOT NULL,
     [created_by]       UNIQUEIDENTIFIER  NOT NULL,
     [updated_by]       UNIQUEIDENTIFIER  NOT NULL,
-    [is_deleted]       BIT               NOT NULL  CONSTRAINT [DF_user_is_deleted]       DEFAULT (0),
+    [is_deleted]       BIT               NOT NULL  CONSTRAINT [DF_user_is_deleted] DEFAULT (0),
 
     CONSTRAINT [PK_user] PRIMARY KEY CLUSTERED ([uuid])
 );
@@ -84,7 +52,7 @@ CREATE NONCLUSTERED INDEX [IX_user_global_ip]
 GO
 
 -- ============================================================
--- [AstralRecord] STEP 2 : dbo.account（FK → dbo.user 付きで作成）
+-- STEP 2 : dbo.account
 -- ============================================================
 
 CREATE TABLE [dbo].[account] (
@@ -92,13 +60,13 @@ CREATE TABLE [dbo].[account] (
     [user_id]        UNIQUEIDENTIFIER  NOT NULL,
     [account_name]   NVARCHAR(50)      NOT NULL,
     [slot_index]     INT               NOT NULL,
-    [is_active]      BIT               NOT NULL  CONSTRAINT [DF_account_is_active]   DEFAULT (0),
-    [mode]           TINYINT           NOT NULL  CONSTRAINT [DF_account_mode]         DEFAULT (0),
+    [is_active]      BIT               NOT NULL  CONSTRAINT [DF_account_is_active] DEFAULT (0),
+    [mode]           TINYINT           NOT NULL  CONSTRAINT [DF_account_mode] DEFAULT (0),
     [created_at]     DATETIME2(3)      NOT NULL,
     [updated_at]     DATETIME2(3)      NOT NULL,
     [created_by]     UNIQUEIDENTIFIER  NOT NULL,
     [updated_by]     UNIQUEIDENTIFIER  NOT NULL,
-    [is_deleted]     BIT               NOT NULL  CONSTRAINT [DF_account_is_deleted]  DEFAULT (0),
+    [is_deleted]     BIT               NOT NULL  CONSTRAINT [DF_account_is_deleted] DEFAULT (0),
 
     CONSTRAINT [PK_account] PRIMARY KEY CLUSTERED ([uuid]),
     CONSTRAINT [FK_account_user] FOREIGN KEY ([user_id])
@@ -118,40 +86,132 @@ CREATE NONCLUSTERED INDEX [IX_account_is_deleted]
     ON [dbo].[account] ([is_deleted]);
 GO
 
+-- ============================================================
+-- STEP 3 : dbo.inventory
+-- ============================================================
+
+CREATE TABLE [dbo].[inventory] (
+    [inventory_id]       UNIQUEIDENTIFIER  NOT NULL,
+    [account_id]         UNIQUEIDENTIFIER  NOT NULL,
+    [inventory_type]     NVARCHAR(30)      NOT NULL,
+    [slot_capacity]      INT                   NULL,
+    [is_enabled]         BIT               NOT NULL  CONSTRAINT [DF_inventory_is_enabled] DEFAULT (1),
+    [metadata_json]      NVARCHAR(MAX)         NULL,
+    [created_at]         DATETIME2(3)      NOT NULL,
+    [updated_at]         DATETIME2(3)      NOT NULL,
+    [created_by]         UNIQUEIDENTIFIER  NOT NULL,
+    [updated_by]         UNIQUEIDENTIFIER  NOT NULL,
+    [is_deleted]         BIT               NOT NULL  CONSTRAINT [DF_inventory_is_deleted] DEFAULT (0),
+
+    CONSTRAINT [PK_inventory] PRIMARY KEY CLUSTERED ([inventory_id]),
+    CONSTRAINT [FK_inventory_account] FOREIGN KEY ([account_id])
+        REFERENCES [dbo].[account] ([uuid])
+        ON DELETE NO ACTION
+        ON UPDATE NO ACTION,
+    CONSTRAINT [UQ_inventory_account_type] UNIQUE ([account_id], [inventory_type]),
+    CONSTRAINT [CK_inventory_slot_capacity] CHECK ([slot_capacity] IS NULL OR [slot_capacity] >= 0)
+);
+GO
+
+CREATE NONCLUSTERED INDEX [IX_inventory_account_id]
+    ON [dbo].[inventory] ([account_id]);
+GO
+
+CREATE NONCLUSTERED INDEX [IX_inventory_inventory_type]
+    ON [dbo].[inventory] ([inventory_type]);
+GO
+
+CREATE NONCLUSTERED INDEX [IX_inventory_is_deleted]
+    ON [dbo].[inventory] ([is_deleted]);
+GO
 
 -- ============================================================
--- [AstralRecord] STEP 3 : dbo.user に IX(account_id) を後付け
---   dbo.account が存在するため、ここで安全に追加できる
---   account_id は初回 INSERT 時 NULL を許容するため NULL 可のまま
+-- STEP 4 : dbo.inventory_entry
+-- ============================================================
+
+CREATE TABLE [dbo].[inventory_entry] (
+    [inventory_entry_id]    UNIQUEIDENTIFIER  NOT NULL,
+    [inventory_id]          UNIQUEIDENTIFIER  NOT NULL,
+    [slot_index]            INT                   NULL,
+    [item_category]         NVARCHAR(30)      NOT NULL,
+    [item_id]               NVARCHAR(100)         NULL,
+    [instance_type]         NVARCHAR(30)          NULL,
+    [instance_id]           UNIQUEIDENTIFIER      NULL,
+    [quantity]              BIGINT            NOT NULL  CONSTRAINT [DF_inventory_entry_quantity] DEFAULT (1),
+    [metadata_json]         NVARCHAR(MAX)         NULL,
+    [created_at]            DATETIME2(3)      NOT NULL,
+    [updated_at]            DATETIME2(3)      NOT NULL,
+    [created_by]            UNIQUEIDENTIFIER  NOT NULL,
+    [updated_by]            UNIQUEIDENTIFIER  NOT NULL,
+    [is_deleted]            BIT               NOT NULL  CONSTRAINT [DF_inventory_entry_is_deleted] DEFAULT (0),
+
+    CONSTRAINT [PK_inventory_entry] PRIMARY KEY CLUSTERED ([inventory_entry_id]),
+    CONSTRAINT [FK_inventory_entry_inventory] FOREIGN KEY ([inventory_id])
+        REFERENCES [dbo].[inventory] ([inventory_id])
+        ON DELETE NO ACTION
+        ON UPDATE NO ACTION,
+    CONSTRAINT [CK_inventory_entry_slot_index] CHECK ([slot_index] IS NULL OR [slot_index] >= 0),
+    CONSTRAINT [CK_inventory_entry_quantity] CHECK ([quantity] >= 1),
+    CONSTRAINT [CK_inventory_entry_payload] CHECK (
+        ([item_id] IS NOT NULL AND [instance_type] IS NULL AND [instance_id] IS NULL)
+        OR ([item_id] IS NULL AND [instance_type] IS NOT NULL AND [instance_id] IS NOT NULL)
+    )
+);
+GO
+
+CREATE NONCLUSTERED INDEX [IX_inventory_entry_inventory_id]
+    ON [dbo].[inventory_entry] ([inventory_id]);
+GO
+
+CREATE UNIQUE NONCLUSTERED INDEX [UX_inventory_entry_inventory_slot]
+    ON [dbo].[inventory_entry] ([inventory_id], [slot_index])
+    WHERE [slot_index] IS NOT NULL;
+GO
+
+CREATE UNIQUE NONCLUSTERED INDEX [UX_inventory_entry_inventory_item]
+    ON [dbo].[inventory_entry] ([inventory_id], [item_id])
+    WHERE [slot_index] IS NULL
+      AND [item_id] IS NOT NULL
+      AND [is_deleted] = 0;
+GO
+
+CREATE NONCLUSTERED INDEX [IX_inventory_entry_instance]
+    ON [dbo].[inventory_entry] ([instance_type], [instance_id]);
+GO
+
+CREATE NONCLUSTERED INDEX [IX_inventory_entry_is_deleted]
+    ON [dbo].[inventory_entry] ([is_deleted]);
+GO
+
+-- ============================================================
+-- STEP 5 : add IX on dbo.user.account_id
 -- ============================================================
 
 CREATE NONCLUSTERED INDEX [IX_user_account_id]
     ON [dbo].[user] ([account_id]);
 GO
 
-
-
 -- ============================================================
--- [AstralRecord] STEP 4-1 : dbo.equipment_instance（装備個体）
+-- STEP 6-1 : dbo.equipment_instance
 -- ============================================================
 
 CREATE TABLE [dbo].[equipment_instance] (
-    [equipment_instance_id]  UNIQUEIDENTIFIER  NOT NULL,
-    [account_id]             UNIQUEIDENTIFIER  NOT NULL,
-    [item_id]                NVARCHAR(100)     NOT NULL,
-    [enhance_level]          INT               NOT NULL  CONSTRAINT [DF_equipment_instance_enhance_level]      DEFAULT (0),
-    [rune_max_slots]         INT               NOT NULL  CONSTRAINT [DF_equipment_instance_rune_max_slots]     DEFAULT (0),
-    [transcendence_rank]     INT               NOT NULL  CONSTRAINT [DF_equipment_instance_transcendence_rank] DEFAULT (0),
-    [transcendence_name]              NVARCHAR(100)        NULL,
-    [transcendence_enhance_max_level] INT                  NULL,
-    [transcendence_enchant_max_slots] INT                  NULL,
-    [durability_max]         INT                   NULL,
-    [durability_value]       INT                   NULL,
-    [created_at]             DATETIME2(3)      NOT NULL,
-    [updated_at]             DATETIME2(3)      NOT NULL,
-    [created_by]             UNIQUEIDENTIFIER  NOT NULL,
-    [updated_by]             UNIQUEIDENTIFIER  NOT NULL,
-    [is_deleted]             BIT               NOT NULL  CONSTRAINT [DF_equipment_instance_is_deleted]         DEFAULT (0),
+    [equipment_instance_id]           UNIQUEIDENTIFIER  NOT NULL,
+    [account_id]                      UNIQUEIDENTIFIER  NOT NULL,
+    [item_id]                         NVARCHAR(100)     NOT NULL,
+    [enhance_level]                   INT               NOT NULL  CONSTRAINT [DF_equipment_instance_enhance_level] DEFAULT (0),
+    [rune_max_slots]                  INT               NOT NULL  CONSTRAINT [DF_equipment_instance_rune_max_slots] DEFAULT (0),
+    [transcendence_rank]              INT               NOT NULL  CONSTRAINT [DF_equipment_instance_transcendence_rank] DEFAULT (0),
+    [transcendence_name]              NVARCHAR(100)         NULL,
+    [transcendence_enhance_max_level] INT                   NULL,
+    [transcendence_enchant_max_slots] INT                   NULL,
+    [durability_max]                  INT                   NULL,
+    [durability_value]                INT                   NULL,
+    [created_at]                      DATETIME2(3)      NOT NULL,
+    [updated_at]                      DATETIME2(3)      NOT NULL,
+    [created_by]                      UNIQUEIDENTIFIER  NOT NULL,
+    [updated_by]                      UNIQUEIDENTIFIER  NOT NULL,
+    [is_deleted]                      BIT               NOT NULL  CONSTRAINT [DF_equipment_instance_is_deleted] DEFAULT (0),
 
     CONSTRAINT [PK_equipment_instance] PRIMARY KEY CLUSTERED ([equipment_instance_id]),
     CONSTRAINT [FK_equipment_instance_account] FOREIGN KEY ([account_id])
@@ -186,22 +246,21 @@ CREATE NONCLUSTERED INDEX [IX_equipment_instance_is_deleted]
     ON [dbo].[equipment_instance] ([is_deleted]);
 GO
 
-
 -- ============================================================
--- [AstralRecord] STEP 4-2 : dbo.equipment_instance_stat_roll
+-- STEP 6-2 : dbo.equipment_instance_stat_roll
 -- ============================================================
 
 CREATE TABLE [dbo].[equipment_instance_stat_roll] (
-    [stat_roll_id]            UNIQUEIDENTIFIER  NOT NULL,
-    [equipment_instance_id]   UNIQUEIDENTIFIER  NOT NULL,
-    [status]                  NVARCHAR(50)      NOT NULL,
-    [random_min]              NVARCHAR(20)      NOT NULL,
-    [random_max]              NVARCHAR(20)      NOT NULL,
-    [sort_order]              INT               NOT NULL  CONSTRAINT [DF_equipment_instance_stat_roll_sort_order]  DEFAULT (0),
-    [created_at]              DATETIME2(3)      NOT NULL,
-    [updated_at]              DATETIME2(3)      NOT NULL,
-    [created_by]              UNIQUEIDENTIFIER  NOT NULL,
-    [updated_by]              UNIQUEIDENTIFIER  NOT NULL,
+    [stat_roll_id]           UNIQUEIDENTIFIER  NOT NULL,
+    [equipment_instance_id]  UNIQUEIDENTIFIER  NOT NULL,
+    [status]                 NVARCHAR(50)      NOT NULL,
+    [random_min]             NVARCHAR(20)      NOT NULL,
+    [random_max]             NVARCHAR(20)      NOT NULL,
+    [sort_order]             INT               NOT NULL  CONSTRAINT [DF_equipment_instance_stat_roll_sort_order] DEFAULT (0),
+    [created_at]             DATETIME2(3)      NOT NULL,
+    [updated_at]             DATETIME2(3)      NOT NULL,
+    [created_by]             UNIQUEIDENTIFIER  NOT NULL,
+    [updated_by]             UNIQUEIDENTIFIER  NOT NULL,
 
     CONSTRAINT [PK_equipment_instance_stat_roll] PRIMARY KEY CLUSTERED ([stat_roll_id]),
     CONSTRAINT [FK_equipment_instance_stat_roll_equipment_instance] FOREIGN KEY ([equipment_instance_id])
@@ -216,22 +275,21 @@ CREATE NONCLUSTERED INDEX [IX_equipment_instance_stat_roll_equipment_instance_id
     ON [dbo].[equipment_instance_stat_roll] ([equipment_instance_id]);
 GO
 
-
 -- ============================================================
--- [AstralRecord] STEP 4-3 : dbo.equipment_instance_enchant
+-- STEP 6-3 : dbo.equipment_instance_enchant
 -- ============================================================
 
 CREATE TABLE [dbo].[equipment_instance_enchant] (
-    [enchant_id]                  UNIQUEIDENTIFIER  NOT NULL,
-    [equipment_instance_id]       UNIQUEIDENTIFIER  NOT NULL,
-    [slot_index]                  INT               NOT NULL,
-    [status]                      NVARCHAR(50)      NOT NULL,
-    [type]                        NVARCHAR(20)      NOT NULL,
-    [value]                       DECIMAL(18, 4)    NOT NULL,
-    [created_at]                  DATETIME2(3)      NOT NULL,
-    [updated_at]                  DATETIME2(3)      NOT NULL,
-    [created_by]                  UNIQUEIDENTIFIER  NOT NULL,
-    [updated_by]                  UNIQUEIDENTIFIER  NOT NULL,
+    [enchant_id]             UNIQUEIDENTIFIER  NOT NULL,
+    [equipment_instance_id]  UNIQUEIDENTIFIER  NOT NULL,
+    [slot_index]             INT               NOT NULL,
+    [status]                 NVARCHAR(50)      NOT NULL,
+    [type]                   NVARCHAR(20)      NOT NULL,
+    [value]                  DECIMAL(18, 4)    NOT NULL,
+    [created_at]             DATETIME2(3)      NOT NULL,
+    [updated_at]             DATETIME2(3)      NOT NULL,
+    [created_by]             UNIQUEIDENTIFIER  NOT NULL,
+    [updated_by]             UNIQUEIDENTIFIER  NOT NULL,
 
     CONSTRAINT [PK_equipment_instance_enchant] PRIMARY KEY CLUSTERED ([enchant_id]),
     CONSTRAINT [FK_equipment_instance_enchant_equipment_instance] FOREIGN KEY ([equipment_instance_id])
@@ -246,21 +304,20 @@ CREATE NONCLUSTERED INDEX [IX_equipment_instance_enchant_equipment_instance_id]
     ON [dbo].[equipment_instance_enchant] ([equipment_instance_id]);
 GO
 
-
 -- ============================================================
--- [AstralRecord] STEP 4-4 : dbo.equipment_instance_rune
+-- STEP 6-4 : dbo.equipment_instance_rune
 -- ============================================================
 
 CREATE TABLE [dbo].[equipment_instance_rune] (
-    [rune_id]                UNIQUEIDENTIFIER NOT NULL,
-    [equipment_instance_id]  UNIQUEIDENTIFIER NOT NULL,
-    [slot_index]             INT              NOT NULL,
-    [rune_instance_id]       UNIQUEIDENTIFIER     NULL,
-    [item_id]                NVARCHAR(100)    NOT NULL,
-    [created_at]             DATETIME2(3)     NOT NULL,
-    [updated_at]             DATETIME2(3)     NOT NULL,
-    [created_by]             UNIQUEIDENTIFIER NOT NULL,
-    [updated_by]             UNIQUEIDENTIFIER NOT NULL,
+    [rune_id]                UNIQUEIDENTIFIER  NOT NULL,
+    [equipment_instance_id]  UNIQUEIDENTIFIER  NOT NULL,
+    [slot_index]             INT               NOT NULL,
+    [rune_instance_id]       UNIQUEIDENTIFIER      NULL,
+    [item_id]                NVARCHAR(100)     NOT NULL,
+    [created_at]             DATETIME2(3)      NOT NULL,
+    [updated_at]             DATETIME2(3)      NOT NULL,
+    [created_by]             UNIQUEIDENTIFIER  NOT NULL,
+    [updated_by]             UNIQUEIDENTIFIER  NOT NULL,
 
     CONSTRAINT [PK_equipment_instance_rune] PRIMARY KEY CLUSTERED ([rune_id]),
     CONSTRAINT [FK_equipment_instance_rune_equipment_instance] FOREIGN KEY ([equipment_instance_id])
@@ -279,20 +336,19 @@ CREATE NONCLUSTERED INDEX [IX_equipment_instance_rune_rune_instance_id]
     ON [dbo].[equipment_instance_rune] ([rune_instance_id]);
 GO
 
-
 -- ============================================================
--- [AstralRecord] STEP 5-1 : dbo.rune_instance（ルーン個体）
+-- STEP 7-1 : dbo.rune_instance
 -- ============================================================
 
 CREATE TABLE [dbo].[rune_instance] (
-    [rune_instance_id] UNIQUEIDENTIFIER NOT NULL,
-    [account_id]        UNIQUEIDENTIFIER NOT NULL,
-    [item_id]           NVARCHAR(100)    NOT NULL,
-    [created_at]        DATETIME2(3)     NOT NULL,
-    [updated_at]        DATETIME2(3)     NOT NULL,
-    [created_by]        UNIQUEIDENTIFIER NOT NULL,
-    [updated_by]        UNIQUEIDENTIFIER NOT NULL,
-    [is_deleted]        BIT              NOT NULL CONSTRAINT [DF_rune_instance_is_deleted] DEFAULT (0),
+    [rune_instance_id]  UNIQUEIDENTIFIER  NOT NULL,
+    [account_id]        UNIQUEIDENTIFIER  NOT NULL,
+    [item_id]           NVARCHAR(100)     NOT NULL,
+    [created_at]        DATETIME2(3)      NOT NULL,
+    [updated_at]        DATETIME2(3)      NOT NULL,
+    [created_by]        UNIQUEIDENTIFIER  NOT NULL,
+    [updated_by]        UNIQUEIDENTIFIER  NOT NULL,
+    [is_deleted]        BIT               NOT NULL  CONSTRAINT [DF_rune_instance_is_deleted] DEFAULT (0),
 
     CONSTRAINT [PK_rune_instance] PRIMARY KEY CLUSTERED ([rune_instance_id]),
     CONSTRAINT [FK_rune_instance_account] FOREIGN KEY ([account_id])
@@ -314,23 +370,22 @@ CREATE NONCLUSTERED INDEX [IX_rune_instance_is_deleted]
     ON [dbo].[rune_instance] ([is_deleted]);
 GO
 
-
 -- ============================================================
--- [AstralRecord] STEP 5-2 : dbo.rune_instance_stat_roll
+-- STEP 7-2 : dbo.rune_instance_stat_roll
 -- ============================================================
 
 CREATE TABLE [dbo].[rune_instance_stat_roll] (
-    [stat_roll_id]       UNIQUEIDENTIFIER NOT NULL,
-    [rune_instance_id]   UNIQUEIDENTIFIER NOT NULL,
-    [status]             NVARCHAR(50)     NOT NULL,
-    [type]               NVARCHAR(20)     NOT NULL,
-    [random_value]       NVARCHAR(20)     NOT NULL,
-    [sort_order]         INT              NOT NULL CONSTRAINT [DF_rune_instance_stat_roll_sort_order] DEFAULT (0),
-    [created_at]         DATETIME2(3)     NOT NULL,
-    [updated_at]         DATETIME2(3)     NOT NULL,
-    [created_by]         UNIQUEIDENTIFIER NOT NULL,
-    [updated_by]         UNIQUEIDENTIFIER NOT NULL,
-    [is_deleted]         BIT              NOT NULL CONSTRAINT [DF_rune_instance_stat_roll_is_deleted] DEFAULT (0),
+    [stat_roll_id]      UNIQUEIDENTIFIER  NOT NULL,
+    [rune_instance_id]  UNIQUEIDENTIFIER  NOT NULL,
+    [status]            NVARCHAR(50)      NOT NULL,
+    [type]              NVARCHAR(20)      NOT NULL,
+    [random_value]      NVARCHAR(20)      NOT NULL,
+    [sort_order]        INT               NOT NULL  CONSTRAINT [DF_rune_instance_stat_roll_sort_order] DEFAULT (0),
+    [created_at]        DATETIME2(3)      NOT NULL,
+    [updated_at]        DATETIME2(3)      NOT NULL,
+    [created_by]        UNIQUEIDENTIFIER  NOT NULL,
+    [updated_by]        UNIQUEIDENTIFIER  NOT NULL,
+    [is_deleted]        BIT               NOT NULL  CONSTRAINT [DF_rune_instance_stat_roll_is_deleted] DEFAULT (0),
 
     CONSTRAINT [PK_rune_instance_stat_roll] PRIMARY KEY CLUSTERED ([stat_roll_id]),
     CONSTRAINT [FK_rune_instance_stat_roll_rune_instance] FOREIGN KEY ([rune_instance_id])
@@ -344,11 +399,6 @@ GO
 CREATE NONCLUSTERED INDEX [IX_rune_instance_stat_roll_rune_instance_id]
     ON [dbo].[rune_instance_stat_roll] ([rune_instance_id]);
 GO
-
-
--- ============================================================
--- [AstralRecordSnapshot] dbo.yaml_snapshot
--- ============================================================
 
 USE [master];
 GO
@@ -371,7 +421,7 @@ CREATE TABLE [dbo].[yaml_snapshot] (
     [updated_at]     DATETIME2(3)      NOT NULL,
     [created_by]     UNIQUEIDENTIFIER  NOT NULL,
     [updated_by]     UNIQUEIDENTIFIER  NOT NULL,
-    [is_deleted]     BIT               NOT NULL  CONSTRAINT [DF_yaml_snapshot_is_deleted]  DEFAULT (0),
+    [is_deleted]     BIT               NOT NULL  CONSTRAINT [DF_yaml_snapshot_is_deleted] DEFAULT (0),
 
     CONSTRAINT [PK_yaml_snapshot] PRIMARY KEY CLUSTERED ([snapshot_id]),
     CONSTRAINT [UQ_yaml_snapshot_file_path] UNIQUE ([file_path])
@@ -381,4 +431,3 @@ GO
 CREATE NONCLUSTERED INDEX [IX_yaml_snapshot_file_path]
     ON [dbo].[yaml_snapshot] ([file_path]);
 GO
-
