@@ -6,6 +6,7 @@ icon: IRON_SWORD
 rarity: RARE
 maxStack: 1
 saleValue: 180
+customModelData: 1001
 lore:
   - "&7仕様確認用に多機能を詰め込んだサンプル片手剣。"
   - "&7強化・エンチャント・ルーン・状態変化に対応する。"
