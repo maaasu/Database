@@ -1,47 +1,45 @@
-# dbo.inventory_entry テーブル設計
-
-各インベントリの中身を保持するテーブルです。  
-通常アイテム・通貨のようなスタック型アイテムと、装備・ルーン・将来のペットのようなインスタンス参照型アイテムの両方を 1 テーブルで扱えるようにしています。  
-どのインベントリ種別に属するかの判定は親テーブル `dbo.inventory.inventory_type` とプラグイン側コードで行います。
+﻿`r`n補足: プロファイル分離（GAME/BUILDER）は親テーブル `dbo.inventory.inventory_profile` で管理します。`r`n蜷・う繝ｳ繝吶Φ繝医Μ縺ｮ荳ｭ霄ｫ繧剃ｿ晄戟縺吶ｋ繝・・繝悶Ν縺ｧ縺吶・ 
+騾壼ｸｸ繧｢繧､繝・Β繝ｻ騾夊ｲｨ縺ｮ繧医≧縺ｪ繧ｹ繧ｿ繝・け蝙九い繧､繝・Β縺ｨ縲∬｣・ｙ繝ｻ繝ｫ繝ｼ繝ｳ繝ｻ蟆・擂縺ｮ繝壹ャ繝医・繧医≧縺ｪ繧､繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ蜿ら・蝙九い繧､繝・Β縺ｮ荳｡譁ｹ繧・1 繝・・繝悶Ν縺ｧ謇ｱ縺医ｋ繧医≧縺ｫ縺励※縺・∪縺吶・ 
+縺ｩ縺ｮ繧､繝ｳ繝吶Φ繝医Μ遞ｮ蛻･縺ｫ螻槭☆繧九°縺ｮ蛻､螳壹・隕ｪ繝・・繝悶Ν `dbo.inventory.inventory_type` 縺ｨ繝励Λ繧ｰ繧､繝ｳ蛛ｴ繧ｳ繝ｼ繝峨〒陦後＞縺ｾ縺吶・
 
 ---
 
-## テーブル情報
+## 繝・・繝悶Ν諠・ｱ
 
-| 項目 | 値 |
+| 鬆・岼 | 蛟､ |
 |:---|:---|
-| スキーマ名 | `dbo` |
-| テーブル名 | `inventory_entry` |
-| 完全修飾名 | `dbo.inventory_entry` |
-| 主キー | `inventory_entry_id` |
-| 外部キー | `dbo.inventory.inventory_id` |
+| 繧ｹ繧ｭ繝ｼ繝槫錐 | `dbo` |
+| 繝・・繝悶Ν蜷・| `inventory_entry` |
+| 螳悟・菫ｮ鬟ｾ蜷・| `dbo.inventory_entry` |
+| 荳ｻ繧ｭ繝ｼ | `inventory_entry_id` |
+| 螟夜Κ繧ｭ繝ｼ | `dbo.inventory.inventory_id` |
 
 ---
 
-## カラム設計
+## 繧ｫ繝ｩ繝險ｭ險・
 
-| カラム名 | データ型 | PK | NotNull | デフォルト | 説明 |
+| 繧ｫ繝ｩ繝蜷・| 繝・・繧ｿ蝙・| PK | NotNull | 繝・ヵ繧ｩ繝ｫ繝・| 隱ｬ譏・|
 |:---|:---|:---:|:---:|:---:|:---|
-| `inventory_entry_id` | `UNIQUEIDENTIFIER` | ○ | ○ |  | インベントリエントリ ID |
-| `inventory_id` | `UNIQUEIDENTIFIER` |  | ○ |  | 所属インベントリ ID |
-| `slot_index` | `INT` |  |  |  | スロット番号。スロットレスの場合は `NULL` |
-| `item_category` | `NVARCHAR(30)` |  | ○ |  | アイテムカテゴリ。例: `CONSUMABLE`, `MATERIAL`, `CURRENCY`, `EQUIPMENT`, `RUNE`, `PET` |
-| `item_id` | `NVARCHAR(100)` |  |  |  | YAML マスタのアイテム ID。スタック型で使用 |
-| `instance_type` | `NVARCHAR(30)` |  |  |  | インスタンス参照種別。例: `EQUIPMENT`, `RUNE`, `PET` |
-| `instance_id` | `UNIQUEIDENTIFIER` |  |  |  | インスタンス参照先 ID |
-| `quantity` | `BIGINT` |  | ○ | `1` | 所持数。スタック型は 1 以上、インスタンス参照型は通常 1 |
-| `metadata_json` | `NVARCHAR(MAX)` |  |  |  | 将来的な拡張用メタデータ |
-| `created_at` | `DATETIME2(3)` |  | ○ |  | レコード作成日時 |
-| `updated_at` | `DATETIME2(3)` |  | ○ |  | レコード更新日時 |
-| `created_by` | `UNIQUEIDENTIFIER` |  | ○ |  | 作成者 UUID |
-| `updated_by` | `UNIQUEIDENTIFIER` |  | ○ |  | 更新者 UUID |
-| `is_deleted` | `BIT` |  | ○ | `0` | 論理削除フラグ |
+| `inventory_entry_id` | `UNIQUEIDENTIFIER` | 笳・| 笳・|  | 繧､繝ｳ繝吶Φ繝医Μ繧ｨ繝ｳ繝医Μ ID |
+| `inventory_id` | `UNIQUEIDENTIFIER` |  | 笳・|  | 謇螻槭う繝ｳ繝吶Φ繝医Μ ID |
+| `slot_index` | `INT` |  |  |  | 繧ｹ繝ｭ繝・ヨ逡ｪ蜿ｷ縲ゅせ繝ｭ繝・ヨ繝ｬ繧ｹ縺ｮ蝣ｴ蜷医・ `NULL` |
+| `item_category` | `NVARCHAR(30)` |  | 笳・|  | 繧｢繧､繝・Β繧ｫ繝・ざ繝ｪ縲ゆｾ・ `CONSUMABLE`, `MATERIAL`, `CURRENCY`, `EQUIPMENT`, `RUNE`, `PET` |
+| `item_id` | `NVARCHAR(100)` |  |  |  | YAML 繝槭せ繧ｿ縺ｮ繧｢繧､繝・Β ID縲ゅせ繧ｿ繝・け蝙九〒菴ｿ逕ｨ |
+| `instance_type` | `NVARCHAR(30)` |  |  |  | 繧､繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ蜿ら・遞ｮ蛻･縲ゆｾ・ `EQUIPMENT`, `RUNE`, `PET` |
+| `instance_id` | `UNIQUEIDENTIFIER` |  |  |  | 繧､繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ蜿ら・蜈・ID |
+| `quantity` | `BIGINT` |  | 笳・| `1` | 謇謖∵焚縲ゅせ繧ｿ繝・け蝙九・ 1 莉･荳翫√う繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ蜿ら・蝙九・騾壼ｸｸ 1 |
+| `metadata_json` | `NVARCHAR(MAX)` |  |  |  | 蟆・擂逧・↑諡｡蠑ｵ逕ｨ繝｡繧ｿ繝・・繧ｿ |
+| `created_at` | `DATETIME2(3)` |  | 笳・|  | 繝ｬ繧ｳ繝ｼ繝我ｽ懈・譌･譎・|
+| `updated_at` | `DATETIME2(3)` |  | 笳・|  | 繝ｬ繧ｳ繝ｼ繝画峩譁ｰ譌･譎・|
+| `created_by` | `UNIQUEIDENTIFIER` |  | 笳・|  | 菴懈・閠・UUID |
+| `updated_by` | `UNIQUEIDENTIFIER` |  | 笳・|  | 譖ｴ譁ｰ閠・UUID |
+| `is_deleted` | `BIT` |  | 笳・| `0` | 隲也炊蜑企勁繝輔Λ繧ｰ |
 
 ---
 
-## 制約設計
+## 蛻ｶ邏・ｨｭ險・
 
-| 制約名 | 種別 | 定義 |
+| 蛻ｶ邏・錐 | 遞ｮ蛻･ | 螳夂ｾｩ |
 |:---|:---|:---|
 | `PK_inventory_entry` | PK | `inventory_entry_id` |
 | `FK_inventory_entry_inventory` | FK | `inventory_id -> dbo.inventory(inventory_id)` |
@@ -51,26 +49,26 @@
 | `DF_inventory_entry_quantity` | DEFAULT | `quantity = 1` |
 | `DF_inventory_entry_is_deleted` | DEFAULT | `is_deleted = 0` |
 
-### 設計意図
+### 險ｭ險域э蝗ｳ
 
-| 項目 | 説明 |
+| 鬆・岼 | 隱ｬ譏・|
 |:---|:---|
-| スタック型 | `item_id` と `quantity` を使用。通常インベントリや通貨向け |
-| インスタンス参照型 | `instance_type` と `instance_id` を使用。装備・ルーン・ペット向け |
-| FK を張らない理由 | 将来 `PET` などの新インスタンステーブルを追加しても、本テーブルのスキーマ変更を避けるため |
+| 繧ｹ繧ｿ繝・け蝙・| `item_id` 縺ｨ `quantity` 繧剃ｽｿ逕ｨ縲る壼ｸｸ繧､繝ｳ繝吶Φ繝医Μ繧・夊ｲｨ蜷代￠ |
+| 繧､繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ蜿ら・蝙・| `instance_type` 縺ｨ `instance_id` 繧剃ｽｿ逕ｨ縲り｣・ｙ繝ｻ繝ｫ繝ｼ繝ｳ繝ｻ繝壹ャ繝亥髄縺・|
+| FK 繧貞ｼｵ繧峨↑縺・炊逕ｱ | 蟆・擂 `PET` 縺ｪ縺ｩ縺ｮ譁ｰ繧､繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ繝・・繝悶Ν繧定ｿｽ蜉縺励※繧ゅ∵悽繝・・繝悶Ν縺ｮ繧ｹ繧ｭ繝ｼ繝槫､画峩繧帝∩縺代ｋ縺溘ａ |
 
 ---
 
-## インデックス設計
+## 繧､繝ｳ繝・ャ繧ｯ繧ｹ險ｭ險・
 
-| インデックス名 | カラム | 種別 | 用途 |
+| 繧､繝ｳ繝・ャ繧ｯ繧ｹ蜷・| 繧ｫ繝ｩ繝 | 遞ｮ蛻･ | 逕ｨ騾・|
 |:---|:---|:---|:---|
-| `PK_inventory_entry` | `inventory_entry_id` | CLUSTERED | 主キー検索 |
-| `IX_inventory_entry_inventory_id` | `inventory_id` | NONCLUSTERED | インベントリ単位取得 |
-| `UX_inventory_entry_inventory_slot` | `inventory_id`, `slot_index` | UNIQUE FILTERED | スロット重複防止 |
-| `UX_inventory_entry_inventory_item` | `inventory_id`, `item_id` | UNIQUE FILTERED | スロットレスなスタック型重複防止 |
-| `IX_inventory_entry_instance` | `instance_type`, `instance_id` | NONCLUSTERED | インスタンス逆引き |
-| `IX_inventory_entry_is_deleted` | `is_deleted` | NONCLUSTERED | 論理削除フィルタ |
+| `PK_inventory_entry` | `inventory_entry_id` | CLUSTERED | 荳ｻ繧ｭ繝ｼ讀懃ｴ｢ |
+| `IX_inventory_entry_inventory_id` | `inventory_id` | NONCLUSTERED | 繧､繝ｳ繝吶Φ繝医Μ蜊倅ｽ榊叙蠕・|
+| `UX_inventory_entry_inventory_slot` | `inventory_id`, `slot_index` | UNIQUE FILTERED | 繧ｹ繝ｭ繝・ヨ驥崎､・亟豁｢ |
+| `UX_inventory_entry_inventory_item` | `inventory_id`, `item_id` | UNIQUE FILTERED | 繧ｹ繝ｭ繝・ヨ繝ｬ繧ｹ縺ｪ繧ｹ繧ｿ繝・け蝙矩㍾隍・亟豁｢ |
+| `IX_inventory_entry_instance` | `instance_type`, `instance_id` | NONCLUSTERED | 繧､繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ騾・ｼ輔″ |
+| `IX_inventory_entry_is_deleted` | `is_deleted` | NONCLUSTERED | 隲也炊蜑企勁繝輔ぅ繝ｫ繧ｿ |
 
 ---
 
@@ -134,12 +132,13 @@ GO
 
 ---
 
-## 用途
+## 逕ｨ騾・
 
-| 用途 | 説明 |
+| 逕ｨ騾・| 隱ｬ譏・|
 |:---|:---|
-| 通常インベントリ | `slot_index` と `item_id` で通常アイテムを管理 |
-| 通貨インベントリ | `slot_index = NULL`、`item_id` + `quantity` で上限なし管理 |
-| 装備インベントリ | `instance_type = 'EQUIPMENT'` と `instance_id` で装備実体を管理 |
-| ルーンインベントリ | `instance_type = 'RUNE'` と `instance_id` でルーン実体を管理 |
-| 将来のペット追加 | `instance_type = 'PET'` を追加すれば同じ構造で扱える |
+| 騾壼ｸｸ繧､繝ｳ繝吶Φ繝医Μ | `slot_index` 縺ｨ `item_id` 縺ｧ騾壼ｸｸ繧｢繧､繝・Β繧堤ｮ｡逅・|
+| 騾夊ｲｨ繧､繝ｳ繝吶Φ繝医Μ | `slot_index = NULL`縲～item_id` + `quantity` 縺ｧ荳企剞縺ｪ縺礼ｮ｡逅・|
+| 陬・ｙ繧､繝ｳ繝吶Φ繝医Μ | `instance_type = 'EQUIPMENT'` 縺ｨ `instance_id` 縺ｧ陬・ｙ螳滉ｽ薙ｒ邂｡逅・|
+| 繝ｫ繝ｼ繝ｳ繧､繝ｳ繝吶Φ繝医Μ | `instance_type = 'RUNE'` 縺ｨ `instance_id` 縺ｧ繝ｫ繝ｼ繝ｳ螳滉ｽ薙ｒ邂｡逅・|
+| 蟆・擂縺ｮ繝壹ャ繝郁ｿｽ蜉 | `instance_type = 'PET'` 繧定ｿｽ蜉縺吶ｌ縺ｰ蜷後§讒矩縺ｧ謇ｱ縺医ｋ |
+

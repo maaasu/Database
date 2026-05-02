@@ -94,6 +94,7 @@ CREATE TABLE [dbo].[inventory] (
     [inventory_id]       UNIQUEIDENTIFIER  NOT NULL,
     [account_id]         UNIQUEIDENTIFIER  NOT NULL,
     [inventory_type]     NVARCHAR(30)      NOT NULL,
+    [inventory_profile]  NVARCHAR(20)      NOT NULL  CONSTRAINT [DF_inventory_profile] DEFAULT ('GAME'),
     [slot_capacity]      INT                   NULL,
     [is_enabled]         BIT               NOT NULL  CONSTRAINT [DF_inventory_is_enabled] DEFAULT (1),
     [metadata_json]      NVARCHAR(MAX)         NULL,
@@ -108,7 +109,8 @@ CREATE TABLE [dbo].[inventory] (
         REFERENCES [dbo].[account] ([uuid])
         ON DELETE NO ACTION
         ON UPDATE NO ACTION,
-    CONSTRAINT [UQ_inventory_account_type] UNIQUE ([account_id], [inventory_type]),
+    CONSTRAINT [UQ_inventory_account_type_profile] UNIQUE ([account_id], [inventory_type], [inventory_profile]),
+    CONSTRAINT [CK_inventory_profile] CHECK ([inventory_profile] IN (N'GAME', N'BUILDER')),
     CONSTRAINT [CK_inventory_slot_capacity] CHECK ([slot_capacity] IS NULL OR [slot_capacity] >= 0)
 );
 GO
@@ -119,6 +121,10 @@ GO
 
 CREATE NONCLUSTERED INDEX [IX_inventory_inventory_type]
     ON [dbo].[inventory] ([inventory_type]);
+GO
+
+CREATE NONCLUSTERED INDEX [IX_inventory_inventory_profile]
+    ON [dbo].[inventory] ([inventory_profile]);
 GO
 
 CREATE NONCLUSTERED INDEX [IX_inventory_is_deleted]
