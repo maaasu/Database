@@ -1,11 +1,25 @@
 -- ============================================================
 -- Database initialization script
 -- Created    : 2026-03-08
--- Updated    : 2026-05-01
+-- Updated    : 2026-05-04
 -- Target DBs : AstralRecord / AstralRecordSnapshot
 -- ============================================================
 
 USE [master];
+GO
+
+IF DB_ID(N'AstralRecordSnapshot') IS NOT NULL
+BEGIN
+    ALTER DATABASE [AstralRecordSnapshot] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE [AstralRecordSnapshot];
+END
+GO
+
+IF DB_ID(N'AstralRecord') IS NOT NULL
+BEGIN
+    ALTER DATABASE [AstralRecord] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE [AstralRecord];
+END
 GO
 
 IF DB_ID(N'AstralRecord') IS NULL
@@ -289,6 +303,7 @@ CREATE TABLE [dbo].[equipment_instance_enchant] (
     [enchant_id]             UNIQUEIDENTIFIER  NOT NULL,
     [equipment_instance_id]  UNIQUEIDENTIFIER  NOT NULL,
     [slot_index]             INT               NOT NULL,
+    [pool_index]             INT               NOT NULL,
     [status]                 NVARCHAR(50)      NOT NULL,
     [type]                   NVARCHAR(20)      NOT NULL,
     [value]                  DECIMAL(18, 4)    NOT NULL,
@@ -302,7 +317,8 @@ CREATE TABLE [dbo].[equipment_instance_enchant] (
         REFERENCES [dbo].[equipment_instance] ([equipment_instance_id])
         ON DELETE CASCADE
         ON UPDATE NO ACTION,
-    CONSTRAINT [UQ_equipment_instance_enchant_slot_index] UNIQUE ([equipment_instance_id], [slot_index])
+    CONSTRAINT [UQ_equipment_instance_enchant_slot_index] UNIQUE ([equipment_instance_id], [slot_index]),
+    CONSTRAINT [UQ_equipment_instance_enchant_pool_index] UNIQUE ([equipment_instance_id], [pool_index])
 );
 GO
 
